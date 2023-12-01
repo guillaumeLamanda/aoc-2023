@@ -29,7 +29,8 @@ pub struct TablePosition {
     pos_end: usize,
 }
 
-#[must_use] pub fn get_path_for_bin(day: usize) -> String {
+#[must_use]
+pub fn get_path_for_bin(day: usize) -> String {
     let day_padded = format!("{day:02}");
     format!("./src/bin/{day_padded}.rs")
 }
@@ -43,15 +44,13 @@ fn locate_table(readme: &str) -> Result<TablePosition, Error> {
         ));
     }
 
-    let pos_start = matches
-        .first()
-        .map(|m| m.0)
-        .ok_or_else(|| Error::Parser("Could not find table start position.".into()))?;
+    let pos_start = matches.first().map(|m| m.0).ok_or_else(|| {
+        Error::Parser("Could not find table start position.".into())
+    })?;
 
-    let pos_end = matches
-        .last()
-        .map(|m| m.0 + m.1.len())
-        .ok_or_else(|| Error::Parser("Could not find table end position.".into()))?;
+    let pos_end = matches.last().map(|m| m.0 + m.1.len()).ok_or_else(|| {
+        Error::Parser("Could not find table end position.".into())
+    })?;
 
     Ok(TablePosition { pos_start, pos_end })
 }
@@ -176,8 +175,7 @@ mod tests {
             "**Total: 190.00ms**",
             "<!--- benchmarking table --->",
             "baz",
-        ]
-        .join("\n");
+        ].join("\n");
         assert_eq!(s, expected);
     }
 }

@@ -20,6 +20,15 @@ pub const ANSI_RESET: &str = "\x1b[0m";
     f.expect("could not open input file")
 }
 
+/// Helper function that reads a text file to string, appending a part suffix. E.g. like `01-2.txt`.
+#[must_use]
+pub fn read_file_part(folder: &str, day: u8, part: u8) -> String {
+    let cwd = env::current_dir().unwrap();
+    let filepath = cwd.join("data").join(folder).join(format!("{day:02}-{part}.txt"));
+    let f = fs::read_to_string(filepath);
+    f.expect("could not open input file")
+}
+
 /// main! produces a block setting up the input and runner for each part.
 #[macro_export]
 macro_rules! main {

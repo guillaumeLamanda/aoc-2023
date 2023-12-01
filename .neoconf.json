@@ -1,0 +1,16 @@
+{
+    "neodev": {
+        "library": {
+            "types": true,
+            "enabled": true
+        }
+    },
+
+    "neoconf": {
+        "plugins": {
+            "sumneko_lua": {
+                "enabled": true
+            }
+        }
+    }
+}
