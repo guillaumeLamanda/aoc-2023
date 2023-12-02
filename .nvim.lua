@@ -69,5 +69,5 @@ end
 
 vim.keymap.set("n", "<leader>po", open_aoc, { desc = "Open advent of code files" })
 vim.keymap.set("n", "<leader>pc", function()
-    vim.cmd("bdelete src/bin/*.rs data/input/*.txt data/puzzles/*.md")
+    vim.cmd("%bdelete")
 end, { desc = "Close advent of code files" })
