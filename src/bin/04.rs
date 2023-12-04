@@ -1,51 +1,27 @@
-pub fn part_one(input: &str) -> Option<u32> {
-    input
-        .lines()
-        .filter(|line| !line.is_empty())
-        .map(|line| line.split_once(':').unwrap().1)
-        .map(|game| {
-            let (scores, winning_numbers) = game.split_once('|').unwrap();
-            let scores: Vec<u32> = scores
-                .split_whitespace()
-                .map(|s| s.parse().unwrap())
-                .collect();
-            let winning_numbers: Vec<u32> = winning_numbers
-                .split_whitespace()
-                .map(|s| s.parse().unwrap())
-                .collect();
+use std::ops::Mul;
 
-            let mut score = 0;
-            for game_score in scores {
-                if !winning_numbers.contains(&game_score) {
-                    continue;
-                }
-                if score == 0 {
-                    score = 1;
-                } else {
-                    score *= 2;
-                }
-            }
-            score
+pub fn part_one(input: &str) -> Option<u32> {
+    build_scores_and_winning_numbers(input)
+        .iter()
+        .map(|(scores, winning_numbers)| {
+            scores
+                .iter()
+                .filter(|s| winning_numbers.contains(s))
+                .collect::<Vec<&u32>>()
+        })
+        .map(|scores| {
+            scores
+                .iter()
+                .fold(0, |acc, _b| if acc == 0 { 1 } else { acc.mul(2) })
         })
         .sum::<u32>()
         .into()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut cards_score_counts = input
-        .lines()
-        .filter(|line| !line.is_empty())
-        .map(|line| line.split_once(':').unwrap().1)
-        .map(|game| {
-            let (scores, winning_numbers) = game.split_once('|').unwrap();
-            let scores: Vec<u32> = scores
-                .split_whitespace()
-                .map(|s| s.parse().unwrap())
-                .collect();
-            let winning_numbers: Vec<u32> = winning_numbers
-                .split_whitespace()
-                .map(|s| s.parse().unwrap())
-                .collect();
+    let mut cards_score_counts = build_scores_and_winning_numbers(input)
+        .iter()
+        .map(|(scores, winning_numbers)| {
             scores
                 .iter()
                 .filter(|score| winning_numbers.contains(score))
@@ -69,6 +45,27 @@ pub fn part_two(input: &str) -> Option<u32> {
         .map(|&n| n.1 as u32)
         .sum::<u32>()
         .into()
+}
+
+fn build_scores_and_winning_numbers(input: &str) -> Vec<(Vec<u32>, Vec<u32>)> {
+    input
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| line.split_once(':').unwrap().1)
+        .filter_map(|game| game.split_once('|'))
+        .map(|(scores, winning_numbers)| {
+            (
+                scores
+                    .split_whitespace()
+                    .filter_map(|s| s.parse().ok())
+                    .collect::<Vec<u32>>(),
+                winning_numbers
+                    .split_whitespace()
+                    .filter_map(|s| s.parse().ok())
+                    .collect::<Vec<u32>>(),
+            )
+        })
+        .collect()
 }
 
 advent_of_code::main!(4);
