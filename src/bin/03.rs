@@ -1,6 +1,5 @@
-use std::ops::Mul;
 use advent_of_code::map::{Map, Position};
-
+use std::ops::Mul;
 
 pub fn part_one(input: &str) -> Option<u32> {
     fn is_symbol(c: char) -> bool {

@@ -39,8 +39,10 @@ impl Game {
             throw.iter().for_each(|(number, color)| {
                 max_throws
                     .entry(color.to_string())
-                    .and_modify(|e| if number > e {
-                        *e = *number;
+                    .and_modify(|e| {
+                        if number > e {
+                            *e = *number;
+                        }
                     })
                     .or_insert(*number);
             });

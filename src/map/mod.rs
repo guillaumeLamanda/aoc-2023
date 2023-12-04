@@ -1,4 +1,3 @@
-
 #[derive(Debug, Copy, Clone)]
 pub struct Position {
     pub x: usize,
@@ -19,7 +18,6 @@ impl From<&str> for Map {
         Self { map }
     }
 }
-
 
 impl Map {
     pub fn get_numbers_and_position(&self) -> Vec<(u32, Position)> {
@@ -59,9 +57,9 @@ fn get_numbers_from_line(line: Vec<char>) -> Vec<(usize, u32)> {
                 if previous_char.is_ascii_digit() {
                     return None;
                 }
-
             }
-            let number: String = line.iter()
+            let number: String = line
+                .iter()
                 .skip(position)
                 .take_while(|c| c.is_ascii_digit())
                 .collect();

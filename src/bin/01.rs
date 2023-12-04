@@ -52,9 +52,7 @@ fn get_all_numbers_from_line(line: &str) -> String {
             }
             possible_numbers
                 .iter()
-                .find(|number_as_string| {
-                    line[position..].starts_with(number_as_string.1)
-                })
+                .find(|number_as_string| line[position..].starts_with(number_as_string.1))
                 .map(|(number, _)| *number)
         })
         .collect::<String>()
