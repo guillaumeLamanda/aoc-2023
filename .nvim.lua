@@ -37,7 +37,7 @@ end
 
 local function open_files(day)
     local instructions_file = string.format("data/puzzles/%02d.md", day)
-    local input_file = string.format("data/inputs/%02d.txt", day)
+    local input_file = string.format("data/examples/%02d.txt", day)
     local source_file = string.format("src/bin/%02d.rs", day)
 
     vim.cmd("e " .. source_file)
@@ -45,13 +45,21 @@ local function open_files(day)
     vim.cmd("split " .. input_file)
 end
 
-local function open_aoc()
+---@return string|nil day
+local function prompt_day()
     local current_day = os.date("*t").day
     local day = vim.fn.input({ prompt = "Day: ", default = current_day })
     if not day or day == "" then
         return
     end
+    return day
+end
 
+local function open_aoc()
+    local day = prompt_day()
+    if not day then
+        return
+    end
     ensure_scaffolding(
         day,
         vim.schedule_wrap(function()
@@ -63,7 +71,6 @@ local function open_aoc()
             )
         end)
     )
-
     -- open thoses files split vertically
 end
 
