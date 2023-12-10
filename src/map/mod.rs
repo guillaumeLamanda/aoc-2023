@@ -1,7 +1,25 @@
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
+}
+
+impl From<&str> for Position {
+    fn from(value: &str) -> Self {
+        let mut split = value.split(',');
+        let x = split.next().unwrap().parse::<usize>().unwrap();
+        let y = split.next().unwrap().parse::<usize>().unwrap();
+        Self { x, y }
+    }
+}
+
+impl From<(usize, usize)> for Position {
+    fn from(value: (usize, usize)) -> Self {
+        Self {
+            x: value.0,
+            y: value.1,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -43,6 +61,77 @@ impl Map {
         }
         result
     }
+
+    pub fn get_char_at_position(&self, p: Position) -> char {
+        self.map[p.y][p.x]
+    }
+
+    pub fn get_adjacents(&self, position: Position) -> Vec<(char, Position)> {
+        let mut adjacents = vec![];
+        if position.y > 0 {
+            let north = self.map[position.y - 1][position.x];
+            adjacents.push((
+                north,
+                Position {
+                    x: position.x,
+                    y: position.y - 1,
+                },
+            ));
+        }
+        if position.x > 0 {
+            let west = self.map[position.y][position.x - 1];
+            adjacents.push((
+                west,
+                Position {
+                    x: position.x - 1,
+                    y: position.y,
+                },
+            ));
+        }
+        if position.x < self.map[0].len() - 1 {
+            let east = self.map[position.y][position.x + 1];
+            adjacents.push((
+                east,
+                Position {
+                    x: position.x + 1,
+                    y: position.y,
+                },
+            ));
+        }
+        if position.y < self.map.len() - 1 {
+            let south = self.map[position.y + 1][position.x];
+            adjacents.push((
+                south,
+                Position {
+                    x: position.x,
+                    y: position.y + 1,
+                },
+            ));
+        }
+        adjacents
+    }
+}
+
+#[test]
+fn test_get_adjacents() {
+    let map = Map::from("123\n456\n789");
+    let adjacents = map.get_adjacents(Position { x: 0, y: 0 });
+    assert!(adjacents.contains(&('2', Position { x: 1, y: 0 })));
+    assert!(adjacents.contains(&('4', Position { x: 0, y: 1 })));
+    let d = map.get_adjacents(Position { x: 1, y: 1 });
+    assert!(d.contains(&('2', Position { x: 1, y: 0 })));
+    assert!(d.contains(&('4', Position { x: 0, y: 1 })));
+    assert!(d.contains(&('6', Position { x: 2, y: 1 })));
+    assert!(d.contains(&('8', Position { x: 1, y: 2 })));
+    let d = map.get_adjacents(Position { x: 2, y: 2 });
+    assert!(d.contains(&('6', Position { x: 2, y: 1 })));
+    assert!(d.contains(&('8', Position { x: 1, y: 2 })));
+    let d = map.get_adjacents(Position { x: 2, y: 0 });
+    assert!(d.contains(&('2', Position { x: 1, y: 0 })));
+    assert!(d.contains(&('6', Position { x: 2, y: 1 })));
+    let d = map.get_adjacents(Position { x: 0, y: 2 });
+    assert!(d.contains(&('4', Position { x: 0, y: 1 })));
+    assert!(d.contains(&('8', Position { x: 1, y: 2 })));
 }
 
 fn get_numbers_from_line(line: Vec<char>) -> Vec<(usize, u32)> {
