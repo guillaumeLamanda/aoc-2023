@@ -216,6 +216,7 @@ fn test_is_inside() {
         "Error on {:?}",
         line
     );
+    let position = Position::from((20, 3));
 }
 
 pub fn part_two(input: &str) -> Option<u64> {

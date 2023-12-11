@@ -1,7 +1,15 @@
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
+}
+
+impl Position {
+    pub fn distance(&self, other: &Position) -> u64 {
+        (self.x.abs_diff(other.x) + self.y.abs_diff(other.y))
+            .try_into()
+            .unwrap()
+    }
 }
 
 impl From<&str> for Position {
