@@ -31,11 +31,11 @@ impl From<(usize, usize)> for Position {
 }
 
 #[derive(Debug)]
-pub struct Map {
-    pub map: Vec<Vec<char>>,
+pub struct Map<T> {
+    pub map: Vec<Vec<T>>,
 }
 
-impl From<&str> for Map {
+impl From<&str> for Map<char> {
     fn from(input: &str) -> Self {
         let map = input
             .lines()
@@ -45,7 +45,7 @@ impl From<&str> for Map {
     }
 }
 
-impl Map {
+impl Map<char> {
     pub fn get_numbers_and_position(&self) -> Vec<(u32, Position)> {
         let mut result: Vec<(u32, Position)> = Vec::new();
 
@@ -117,6 +117,17 @@ impl Map {
             ));
         }
         adjacents
+    }
+
+    // from https://stackoverflow.com/a/64499219/10558013
+    pub fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>>
+    where
+        T: Clone,
+    {
+        assert!(!v.is_empty());
+        (0..v[0].len())
+            .map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>())
+            .collect()
     }
 }
 
