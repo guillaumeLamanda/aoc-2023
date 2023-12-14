@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub struct Position {
     pub x: usize,
@@ -35,31 +37,35 @@ pub struct Map<T> {
     pub map: Vec<Vec<T>>,
 }
 
-impl From<&str> for Map<char> {
+impl<T> From<&str> for Map<T>
+where
+    T: From<char>,
+{
     fn from(input: &str) -> Self {
         let map = input
             .lines()
-            .map(|line| line.chars().collect())
+            .map(|line| line.chars().map(|c| T::from(c)).collect())
             .collect::<Vec<_>>();
         Self { map }
     }
 }
 
-impl Map<char> {
-    pub fn get_numbers_and_position(&self) -> Vec<(u32, Position)> {
-        let mut result: Vec<(u32, Position)> = Vec::new();
-
-        for (y, row) in self.map.iter().enumerate() {
-            let numbers_in_row = get_numbers_from_line(row.clone());
-            for (x, number) in numbers_in_row {
-                result.push((number, Position { x, y }));
-            }
-        }
-        result
+impl<T> FromStr for Map<T>
+where
+    T: From<char>,
+{
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from(s))
     }
+}
 
-    pub fn get_symbol_and_position(&self, is_symbol: fn(char) -> bool) -> Vec<(char, Position)> {
-        let mut result: Vec<(char, Position)> = Vec::new();
+impl<T> Map<T>
+where
+    T: Copy,
+{
+    pub fn get_symbol_and_position(&self, is_symbol: fn(T) -> bool) -> Vec<(T, Position)> {
+        let mut result: Vec<(T, Position)> = Vec::new();
         for (y, row) in self.map.iter().enumerate() {
             for (x, c) in row.iter().enumerate() {
                 if is_symbol(*c) {
@@ -70,11 +76,11 @@ impl Map<char> {
         result
     }
 
-    pub fn get_char_at_position(&self, p: Position) -> char {
+    pub fn get(&self, p: Position) -> T {
         self.map[p.y][p.x]
     }
 
-    pub fn get_adjacents(&self, position: Position) -> Vec<(char, Position)> {
+    pub fn get_adjacents(&self, position: Position) -> Vec<(T, Position)> {
         let mut adjacents = vec![];
         if position.y > 0 {
             let north = self.map[position.y - 1][position.x];
@@ -119,15 +125,34 @@ impl Map<char> {
         adjacents
     }
 
-    // from https://stackoverflow.com/a/64499219/10558013
-    pub fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>>
-    where
-        T: Clone,
-    {
-        assert!(!v.is_empty());
-        (0..v[0].len())
-            .map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>())
-            .collect()
+    pub fn transpose(&mut self) -> &Vec<Vec<T>> {
+        self.map = transpose(&self.map);
+        &self.map
+    }
+}
+
+// from https://stackoverflow.com/a/64499219/10558013
+pub fn transpose<T>(v: &Vec<Vec<T>>) -> Vec<Vec<T>>
+where
+    T: Clone,
+{
+    assert!(!v.is_empty());
+    (0..v[0].len())
+        .map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>())
+        .collect()
+}
+
+impl Map<char> {
+    pub fn get_numbers_and_position(&self) -> Vec<(u32, Position)> {
+        let mut result: Vec<(u32, Position)> = Vec::new();
+
+        for (y, row) in self.map.iter().enumerate() {
+            let numbers_in_row = get_numbers_from_line(row.clone());
+            for (x, number) in numbers_in_row {
+                result.push((number, Position { x, y }));
+            }
+        }
+        result
     }
 }
 

@@ -1,4 +1,4 @@
-use advent_of_code::map::Map;
+use advent_of_code::map::{transpose, Map};
 
 pub fn part_one(input: &str) -> Option<u32> {
     let x = input
@@ -9,7 +9,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             if rows_count.is_some() {
                 return rows_count.map(|c| c * 100);
             }
-            let cols = Map::transpose(map.map);
+            let cols = transpose(&map.map);
             walk_through_map(&cols)
         })
         .sum::<usize>();
@@ -44,7 +44,7 @@ fn test_walk_througth_second_schema() {
     let r = walk_through_map(&map.map);
     assert_eq!(r, None);
 
-    let cols = Map::transpose(map.map);
+    let cols = transpose(&map.map);
     let r = walk_through_map(&cols);
     assert_eq!(r, Some(5));
 
@@ -52,7 +52,7 @@ fn test_walk_througth_second_schema() {
     let r = walk_through_map(&map.map);
     assert_eq!(r, Some(4));
 
-    let cols = Map::transpose(map.map);
+    let cols = transpose(&map.map);
     let r = walk_through_map(&cols);
     assert_eq!(r, None);
 }

@@ -96,7 +96,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some((get_polygon(&map).len() as u32 - 1) / 2)
 }
 
-fn get_polygon(map: &Map) -> Vec<Position> {
+fn get_polygon(map: &Map<char>) -> Vec<Position> {
     let starting_position = map
         .get_symbol_and_position(|c| c == STARTING_POSITION)
         .first()
@@ -109,7 +109,7 @@ fn get_polygon(map: &Map) -> Vec<Position> {
     polygon.push(position);
 
     while position != starting_position {
-        let c = map.get_char_at_position(position);
+        let c = map.get(position);
         let next_position = get_next_position(c, position, previous_position);
         previous_position = position;
         position = next_position;
@@ -118,7 +118,7 @@ fn get_polygon(map: &Map) -> Vec<Position> {
     polygon
 }
 
-fn get_next_position_from_start(start: Position, map: &Map) -> Option<Position> {
+fn get_next_position_from_start(start: Position, map: &Map<char>) -> Option<Position> {
     let adjacents = map.get_adjacents(start);
     adjacents
         .iter()
@@ -216,7 +216,6 @@ fn test_is_inside() {
         "Error on {:?}",
         line
     );
-    let position = Position::from((20, 3));
 }
 
 pub fn part_two(input: &str) -> Option<u64> {

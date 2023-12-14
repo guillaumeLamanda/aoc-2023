@@ -78,7 +78,7 @@ fn test_expand_galaxy() {
     galaxy.map = expand_galaxy_map(&galaxy.map);
     assert_eq!(galaxy.map.len(), 12);
     assert_eq!(galaxy.map[0].len(), 13);
-    assert_eq!(galaxy.get_char_at_position(Position::from((5, 11))), '#')
+    assert_eq!(galaxy.get(Position::from((5, 11))), '#')
 }
 
 fn get_expand(map: &[Vec<char>]) -> (Vec<usize>, Vec<usize>) {
