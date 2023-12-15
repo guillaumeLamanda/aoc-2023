@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use advent_of_code::map::{transpose, Map};
 
-#[derive(Debug, PartialEq, Copy, Clone, PartialOrd, Ord, Eq)]
+#[derive(Debug, PartialEq, Copy, Clone, PartialOrd, Ord, Eq, Hash)]
 enum Item {
     Rounded,
     Empty,
@@ -21,6 +23,7 @@ impl From<char> for Item {
 pub fn part_one(input: &str) -> Option<usize> {
     let map: Map<Item> = Map::from(input);
     let binding = transpose(&map.map);
+    let mut memo = HashMap::<Vec<Item>, Vec<Item>>::new();
     let r: Vec<Vec<&Item>> = binding
         .iter()
         .filter_map(|col| -> Option<_> {
