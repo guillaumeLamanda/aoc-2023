@@ -24,7 +24,28 @@ pub fn part_one(input: &str) -> Option<usize> {
     let map: Map<Item> = Map::from(input);
     let binding = transpose(&map.map);
     let mut memo = HashMap::<Vec<Item>, Vec<Item>>::new();
-    let r: Vec<Vec<&Item>> = binding
+    let result = tilt(&binding);
+    count_rounded_square_distance(result)
+}
+
+fn count_rounded_square_distance(r: Vec<Vec<&Item>>) -> Option<usize> {
+    r.iter()
+        .map(|column| {
+            let num_cols = column.len();
+            column
+                .iter()
+                .enumerate()
+                .filter(|item| item.1 == &&Item::Rounded)
+                .map(|(i, _)| i)
+                .map(|i| num_cols - i)
+                .sum::<usize>()
+        })
+        .sum::<usize>()
+        .into()
+}
+
+fn tilt(binding: &[Vec<Item>]) -> Vec<Vec<&Item>> {
+    binding
         .iter()
         .filter_map(|col| -> Option<_> {
             let binding = col.iter().collect::<Vec<_>>();
@@ -42,21 +63,7 @@ pub fn part_one(input: &str) -> Option<usize> {
                 });
             x
         })
-        .collect();
-
-    r.iter()
-        .map(|column| {
-            let num_cols = column.len();
-            column
-                .iter()
-                .enumerate()
-                .filter(|item| item.1 == &&Item::Rounded)
-                .map(|(i, _)| i)
-                .map(|i| num_cols - i)
-                .sum::<usize>()
-        })
-        .sum::<usize>()
-        .into()
+        .collect::<Vec<Vec<&Item>>>()
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
@@ -78,6 +85,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", 14));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(64));
     }
 }
