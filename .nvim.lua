@@ -74,7 +74,21 @@ local function open_aoc()
     -- open thoses files split vertically
 end
 
+local function download_aoc()
+    local day = prompt_day()
+    if not day then
+        return
+    end
+    ensure_download(
+        day,
+        vim.schedule_wrap(function()
+            vim.notify("downloaded day " .. day)
+        end)
+    )
+end
+
 vim.keymap.set("n", "<leader>po", open_aoc, { desc = "Open advent of code files" })
+vim.keymap.set("n", "<leader>pd", download_aoc, { desc = "Open advent of code files" })
 vim.keymap.set("n", "<leader>pc", function()
     vim.cmd("%bdelete")
 end, { desc = "Close advent of code files" })

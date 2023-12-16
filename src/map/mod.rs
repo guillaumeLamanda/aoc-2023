@@ -80,6 +80,10 @@ where
         self.map[p.y][p.x]
     }
 
+    pub fn is_out_of_bounds(&self, p: Position) -> bool {
+        p.x >= self.map[0].len() || p.y >= self.map.len()
+    }
+
     pub fn get_adjacents(&self, position: Position) -> Vec<(T, Position)> {
         let mut adjacents = vec![];
         if position.y > 0 {
