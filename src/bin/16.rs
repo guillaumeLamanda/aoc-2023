@@ -1,7 +1,6 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
-use advent_of_code::map::Position;
-use num_traits::CheckedSub;
+use advent_of_code::map::{Map, Position};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum Direction {
@@ -86,14 +85,24 @@ impl Tile {
 pub fn part_one(input: &str) -> Option<u32> {
     let map = advent_of_code::map::Map::<Tile>::from(input);
 
-    let mut visited_tiles = vec![];
-    let mut stack = vec![(Position::from((0, 0)), Direction::Right)];
+    let positions = energize(&map, (Position::from((0, 0)), Direction::Right));
 
-    loop {
-        if stack.is_empty() {
-            break;
-        }
-        let (position, direction) = stack.pop().unwrap();
+    Some(get_positions_len(positions))
+}
+
+fn get_positions_len(positions: Vec<(Position, Direction)>) -> u32 {
+    positions
+        .into_iter()
+        .map(|(p, _)| p)
+        .collect::<HashSet<Position>>()
+        .len() as u32
+}
+
+fn energize(map: &Map<Tile>, init: (Position, Direction)) -> Vec<(Position, Direction)> {
+    let mut visited_tiles = vec![];
+    let mut stack = vec![init];
+
+    while let Some((position, direction)) = stack.pop() {
         visited_tiles.push((position, direction));
 
         let tile = map.get(position);
@@ -118,13 +127,31 @@ pub fn part_one(input: &str) -> Option<u32> {
         }
     }
 
-    let visited_tiles: HashSet<Position> = visited_tiles.into_iter().map(|(p, _)| p).collect();
-
-    Some(visited_tiles.len() as u32)
+    visited_tiles
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let map = Map::<Tile>::from(input);
+
+    let mut starting_positions: Vec<(Position, Direction)> = vec![];
+    let min_x = 0;
+    let max_x = map.map[0].len() - 1;
+    let min_y = 0;
+    let max_y = map.map.len() - 1;
+    for x in min_x..=max_x {
+        starting_positions.push((Position::from((x, min_y)), Direction::Down));
+        starting_positions.push((Position::from((x, max_y)), Direction::Up));
+    }
+    for y in min_y..=max_y {
+        starting_positions.push((Position::from((min_x, y)), Direction::Right));
+        starting_positions.push((Position::from((max_x, y)), Direction::Left));
+    }
+
+    starting_positions
+        .iter()
+        .map(|init| energize(&map, *init))
+        .map(get_positions_len)
+        .max()
 }
 
 advent_of_code::main!(16);
@@ -142,7 +169,7 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", 16));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(51));
     }
 
     #[test]
