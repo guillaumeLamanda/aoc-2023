@@ -6,6 +6,24 @@ pub struct Position {
     pub y: usize,
 }
 
+impl Position {
+    pub fn to_tuple(&self) -> (usize, usize) {
+        (self.x, self.y)
+    }
+}
+
+impl From<Position> for (usize, usize) {
+    fn from(val: Position) -> Self {
+        (val.x, val.y)
+    }
+}
+
+impl From<Position> for (isize, isize) {
+    fn from(val: Position) -> Self {
+        (val.x as isize, val.y as isize)
+    }
+}
+
 impl Display for Position {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "[{}, {}]", self.x, self.y)
