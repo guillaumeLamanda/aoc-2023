@@ -1,29 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use advent_of_code::direction::{self, Direction};
 use advent_of_code::map::{Map, Position};
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    fn apply(&self, position: &Position) -> Position {
-        match self {
-            Self::Up => {
-                Position::from((position.x, position.y.checked_sub(1).unwrap_or(position.y)))
-            }
-            Self::Down => Position::from((position.x, position.y + 1)),
-            Self::Left => {
-                Position::from((position.x.checked_sub(1).unwrap_or(position.x), position.y))
-            }
-            Self::Right => Position::from((position.x + 1, position.y)),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Copy)]
 enum SplitterDirection {
@@ -184,8 +162,8 @@ mod tests {
     fn test_next_tile() {
         // .x.
         // >/
-        let direction = Direction::Right;
-        let tile = Tile::Mirror(Direction::Right);
+        let direction = direction::Direction::Right;
+        let tile = Tile::Mirror(direction::Direction::Right);
         assert_eq!(tile.next(&direction), (Direction::Up, None));
     }
 }
