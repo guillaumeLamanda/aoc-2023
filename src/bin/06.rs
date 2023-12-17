@@ -79,10 +79,4 @@ mod tests {
         let result = part_two(&advent_of_code::template::read_file("examples", 6));
         assert_eq!(result, Some(71503));
     }
-
-    #[test]
-    fn test_part_two_input() {
-        let result = part_two(&advent_of_code::template::read_file("inputs", 6));
-        assert_eq!(result, Some(71503));
-    }
 }

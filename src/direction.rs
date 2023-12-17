@@ -1,10 +1,10 @@
 use crate::map::Position;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Direction {
     Up,
-    Down,
     Left,
+    Down,
     Right,
 }
 
@@ -19,6 +19,24 @@ impl Direction {
                 Position::from((position.x.checked_sub(1).unwrap_or(position.x), position.y))
             }
             Self::Right => Position::from((position.x + 1, position.y)),
+        }
+    }
+
+    pub fn go_left(&self) -> Self {
+        match self {
+            Direction::Up => Direction::Left,
+            Direction::Down => Direction::Right,
+            Direction::Left => Direction::Down,
+            Direction::Right => Direction::Up,
+        }
+    }
+
+    pub fn go_right(&self) -> Self {
+        match self {
+            Direction::Up => Direction::Right,
+            Direction::Down => Direction::Left,
+            Direction::Left => Direction::Up,
+            Direction::Right => Direction::Down,
         }
     }
 }

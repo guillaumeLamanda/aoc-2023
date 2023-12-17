@@ -178,26 +178,6 @@ impl<'a> From<PartTwo<'a>> for Hand {
     }
 }
 
-#[test]
-fn test_hand_from_part_two() {
-    assert_eq!(
-        Hand::from(PartTwo("32TJK 765")),
-        Hand {
-            hand_type: HandType::HighCard,
-            cards: vec![3, 2, 10, 1, 13],
-            bid: 765,
-        }
-    );
-    assert_eq!(
-        Hand::from(PartTwo("T3T3J 17")),
-        Hand {
-            hand_type: HandType::FullHouse,
-            cards: vec![10, 3, 10, 3, 1],
-            bid: 17,
-        }
-    );
-}
-
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))

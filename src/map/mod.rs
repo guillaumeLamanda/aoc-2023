@@ -1,9 +1,15 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
+}
+
+impl Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}, {}]", self.x, self.y)
+    }
 }
 
 impl Position {
@@ -64,6 +70,21 @@ impl<T> Map<T>
 where
     T: Copy,
 {
+    pub fn from_numbers(input: &str) -> Self
+    where
+        T: From<u32>,
+    {
+        let map = input
+            .lines()
+            .map(|line| {
+                line.chars()
+                    .map(|c| T::from(c.to_digit(10).unwrap()))
+                    .collect()
+            })
+            .collect::<Vec<_>>();
+        Self { map }
+    }
+
     pub fn get_symbol_and_position(&self, is_symbol: fn(T) -> bool) -> Vec<(T, Position)> {
         let mut result: Vec<(T, Position)> = Vec::new();
         for (y, row) in self.map.iter().enumerate() {

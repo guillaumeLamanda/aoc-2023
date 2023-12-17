@@ -220,13 +220,6 @@ mod tests {
     fn test_part_two_10() {
         // each expansion is one million size
         let result = part_two(&advent_of_code::template::read_file("examples", 11));
-        assert_eq!(result, Some(1030));
-    }
-
-    #[test]
-    fn test_part_two_10_2() {
-        // each expansion is one million size
-        let result = part_two(&advent_of_code::template::read_file("examples", 11));
-        assert_eq!(result, Some(8410));
+        assert_eq!(result, Some(82000210));
     }
 }
