@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use geo::Coord;
+
 use crate::map::Position;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -35,6 +37,15 @@ impl Direction {
                 Position::from((position.x.checked_sub(1).unwrap_or(position.x), position.y))
             }
             Self::Right => Position::from((position.x + 1, position.y)),
+        }
+    }
+
+    pub fn apply_on_coord(&self, coord: &Coord) -> Coord {
+        match self {
+            Self::Up => Coord::from((coord.x, coord.y - 1.)),
+            Self::Down => Coord::from((coord.x, coord.y + 1.)),
+            Self::Left => Coord::from((coord.x - 1., coord.y)),
+            Self::Right => Coord::from((coord.x + 1., coord.y)),
         }
     }
 
