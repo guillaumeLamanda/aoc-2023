@@ -1,12 +1,11 @@
 use std::{collections::HashMap, str::FromStr, usize};
 
-#[derive(Debug, PartialEq, Eq, Hash)]
-#[repr(u8)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 enum Category {
-    Extremely = b'x',
-    Musical = b'm',
-    Aerodynamic = b'a',
-    Shiny = b's',
+    Extremely = 0,
+    Musical = 1,
+    Aerodynamic = 2,
+    Shiny = 3,
 }
 
 impl From<char> for Category {
@@ -111,6 +110,10 @@ impl Rules {
             .unwrap_or(self.default.clone())
     }
 
+    fn is_finishing_at(&self, destination: &str) -> bool {
+        self.default == destination || self.get_rule_finishing_at(destination).is_some()
+    }
+
     fn get_rule_finishing_at(&self, destination: &str) -> Option<&Rule> {
         self.rules
             .iter()
@@ -211,20 +214,67 @@ pub fn part_two(input: &str) -> Option<u64> {
         .collect::<Vec<_>>();
     println!("finishing_rules: {:?}", finishing_rules);
 
-    // start with the path
     for (id, rules) in finishing_rules {
-        let mut id = id;
-        let mut path = vec![id];
-
-        while let Some(rules) = id_to_rules.get(id) {
-            let (next_id, _rules) = id_to_rules
-                .iter()
-                .find(|(_, rules)| rules.rules.iter().any(|rule| rule.destination == *id))?;
-            path.push(next_id);
-            id = next_id;
+        let mut possibilities_ranges = [[1, 4000]; 4];
+        if rules.default == "A" {
+            // reverse all conditions
+            // example: pv{a>1716:R,A}
+            for rule in &rules.rules {
+                match rule.operand {
+                    Operand::GreaterThan => {
+                        possibilities_ranges[rule.testing as usize][0] = rule.comparing_to + 1;
+                    }
+                    Operand::LowerThan => {
+                        possibilities_ranges[rule.testing as usize][1] = rule.comparing_to - 1;
+                    }
+                }
+            }
+        } else {
+            for rule in &rules.rules {
+                match rule.operand {
+                    Operand::GreaterThan => {
+                        possibilities_ranges[rule.testing as usize][1] = rule.comparing_to;
+                    }
+                    Operand::LowerThan => {
+                        possibilities_ranges[rule.testing as usize][0] = rule.comparing_to;
+                    }
+                }
+            }
         }
-        println!("{:?}", path);
+
+        // need to get the next one
+        let mut next_id = id;
+        while let Some((id, rules)) = id_to_rules
+            .iter()
+            .find(|(_, rules)| rules.is_finishing_at(next_id))
+        {
+            if let Some(rule) = rules.get_rule_finishing_at(next_id) {
+                match rule.operand {
+                    Operand::GreaterThan => {
+                        possibilities_ranges[rule.testing as usize][0] = rule.comparing_to + 1;
+                    }
+                    Operand::LowerThan => {
+                        possibilities_ranges[rule.testing as usize][1] = rule.comparing_to - 1;
+                    }
+                }
+            } else {
+                // revert, one more time
+                for rule in &rules.rules {
+                    match rule.operand {
+                        Operand::GreaterThan => {
+                            possibilities_ranges[rule.testing as usize][1] = rule.comparing_to;
+                        }
+                        Operand::LowerThan => {
+                            possibilities_ranges[rule.testing as usize][0] = rule.comparing_to;
+                        }
+                    }
+                }
+            }
+            next_id = id;
+        }
+        println!("possibilities_ranges: {:?}", possibilities_ranges);
     }
+
     None
 }
 
