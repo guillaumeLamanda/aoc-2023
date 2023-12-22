@@ -49,6 +49,18 @@ impl Direction {
         }
     }
 
+    // TODO: add logic to pop on the opposite of the map here
+    pub fn apply_with_repeat(&self, position: &Position, max: (usize, usize)) -> Position {
+        match self {
+            Self::Up => Position::from((position.x, position.y.checked_sub(1).unwrap_or(1))),
+            Self::Down => Position::from((position.x, position.y + 1)),
+            Self::Left => {
+                Position::from((position.x.checked_sub(1).unwrap_or(position.x), position.y))
+            }
+            Self::Right => Position::from((position.x + 1, position.y)),
+        }
+    }
+
     pub fn go_left(&self) -> Self {
         match self {
             Direction::Up => Direction::Left,

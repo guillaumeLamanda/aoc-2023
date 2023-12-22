@@ -24,9 +24,11 @@ impl From<char> for Tile {
     }
 }
 
-const LENGTH: usize = 6;
-
 pub fn part_one(input: &str) -> Option<usize> {
+    #[cfg(debug_assertions)]
+    const LENGTH: usize = 6;
+    #[cfg(not(debug_assertions))]
+    const LENGTH: usize = 64;
     let matrix = Matrix::from_rows(
         input
             .lines()
@@ -71,8 +73,53 @@ pub fn part_one(input: &str) -> Option<usize> {
     .into()
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<usize> {
+    #[cfg(debug_assertions)]
+    const LENGTH: usize = 10;
+    #[cfg(not(debug_assertions))]
+    const LENGTH: usize = 26501365;
+    let matrix = Matrix::from_rows(
+        input
+            .lines()
+            .map(|line| line.chars().map(Tile::from).collect::<Vec<Tile>>())
+            .collect::<Vec<_>>(),
+    )
+    .unwrap();
+
+    let starting_position = matrix
+        .items()
+        .find(|(_, &tile)| tile.eq(&Tile::StartingPosition))
+        .map(|a| a.0)
+        .unwrap();
+
+    dfs_reach(
+        (Position::from(starting_position), 0),
+        |(position, length)| {
+            if length == &LENGTH {
+                return vec![];
+            }
+            let mut next_positions = vec![];
+            for direction in [
+                Direction::Up,
+                Direction::Left,
+                Direction::Down,
+                Direction::Right,
+            ] {
+                let next_position = direction.apply(position);
+                if matrix
+                    .get(next_position.to_tuple())
+                    .map(|&tile| !tile.eq(&Tile::Rock))
+                    .unwrap_or(false)
+                {
+                    next_positions.push((next_position, length + 1));
+                }
+            }
+            next_positions
+        },
+    )
+    .filter(|(_, length)| length == &LENGTH)
+    .count()
+    .into()
 }
 
 advent_of_code::main!(21);
