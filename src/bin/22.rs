@@ -1,34 +1,11 @@
 use std::{collections::HashMap, num::ParseIntError, str::FromStr, string::ParseError};
 
+use advent_of_code::point3d;
 use rangetools::Rangetools;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-struct Point3D {
-    x: usize,
-    y: usize,
-    z: usize,
-}
-
-impl From<(usize, usize, usize)> for Point3D {
-    fn from((x, y, z): (usize, usize, usize)) -> Self {
-        Point3D { x, y, z }
-    }
-}
-
-impl FromStr for Point3D {
-    type Err = ParseIntError;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut coords = s.split(',');
-        let x = coords.next().unwrap().parse()?;
-        let y = coords.next().unwrap().parse()?;
-        let z = coords.next().unwrap().parse()?;
-        Ok(Point3D { x, y, z })
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Brick {
-    edges: (Point3D, Point3D),
+    edges: (point3d::Point3D, point3d::Point3D),
 }
 
 impl FromStr for Brick {
@@ -111,7 +88,10 @@ fn test_brick_contact() {
 #[test]
 fn test_brick_volume() {
     let brick = Brick {
-        edges: (Point3D { x: 0, y: 0, z: 0 }, Point3D { x: 1, y: 1, z: 1 }),
+        edges: (
+            point3d::Point3D { x: 0, y: 0, z: 0 },
+            point3d::Point3D { x: 1, y: 1, z: 1 },
+        ),
     };
     assert_eq!(brick.volume(), 1);
     let a = Brick::from_str("1,0,1~1,2,1").unwrap();
@@ -222,6 +202,7 @@ mod tests {
     #[test]
     fn test_part_one_alt() {
         let result = part_one(&advent_of_code::template::read_file_part("examples", 22, 1));
+        // It should return 3 because A is needed to support C
         assert_eq!(result, Some(2));
     }
 
